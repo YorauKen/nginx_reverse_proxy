@@ -1,0 +1,25 @@
+server:
+  listen : 8080
+  workers : 4
+  upstreams:        # denote the servers running behind our nginx server
+    - id : jsonplaceholder
+      url : jsonplaceholder.typicode.com
+    
+    - id : dummy
+      url : dummyjson.com
+
+  headers:
+    - key : x-forward-for 
+      value : "$ip"
+    
+    - key : Authorization
+      value : 'Bearer xyz'
+
+  rules : 
+    - path : /test
+      upstreams : 
+        - dummy
+    - path : /   # if any request comes to "/" this path it is assumed to be redirected to jsonplaceholder
+      upstreams : 
+        - jsonplaceholder
+    
